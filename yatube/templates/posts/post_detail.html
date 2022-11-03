@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% block title %}
-    {{ post_title }}
+    {{ post.text }}
 {% endblock %} 
 {% block content %}
     <div class="container py-5" >
@@ -9,7 +9,7 @@
         <aside class="col-12 col-md-3">
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              Дата публикации: {{ pub_date }}
+              Дата публикации: {{ post.pub_date }}
             </li>
             <!-- если у поста есть группа -->   
             <li class="list-group-item">
@@ -19,10 +19,10 @@
               {% endif %}
             </li>
             <li class="list-group-item">
-              Автор: {{ author.get_full_name }}
+              Автор: {{ post.author.get_full_name }}
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              Всего постов автора:  <span >{{ author_posts }}</span>
+              Всего постов автора:  <span >{{ author.posts.all.count }}</span>
             </li>
             <li class="list-group-item">
                 <a href="{% url 'posts:profile' post.author.username %}">
