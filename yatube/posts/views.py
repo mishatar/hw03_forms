@@ -1,43 +1,29 @@
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import PostForm
 from .models import Group, Post, User
+from .utils import paginator_func
 
-CONST = 10
 FIRST_THIRTY = 30
 
 
-def paginator_func(queryset, request):
-    paginator = Paginator(queryset, CONST)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return {
-        'paginator': paginator,
-        'page_number': page_number,
-        'page_obj': page_obj,
-    }
-
-
 def index(request):
-    post_list = Post.objects.all()
+    post_list = Post.objects.select_related()
     pagin = paginator_func(post_list, request)
     context = {
-        'page_obj': pagin['page_obj'],
+        'page_obj': pagin,
     }
     return render(request, 'posts/index.html', context)
 
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = group.posts.order_by('-pub_date')[:CONST]
     post_list = Post.objects.all()
     pagin = paginator_func(post_list, request)
     context = {
         'group': group,
-        'posts': posts,
-        'page_obj': pagin['page_obj'],
+        'page_obj': pagin,
     }
     return render(request, 'posts/group_list.html', context)
 
@@ -47,7 +33,7 @@ def profile(request, username):
     pagin = paginator_func(author.posts.all(), request)
     context = {
         'author': author,
-        'page_obj': pagin['page_obj'],
+        'page_obj': pagin,
     }
     template = 'posts/profile.html'
     return render(request, template, context)
